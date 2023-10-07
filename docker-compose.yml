@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mysql-container:
+    image: mysql:8.1
+    environment:
+      MYSQL_ROOT_PASSWORD: Emmanuel
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - my-network
+
+  flask-container:
+    image: alpine:3.14
+    build:
+      context: ./ServidorWeb/Dockerfile  # Reemplaza con la ruta correcta a tu aplicación Flask
+    environment:
+      MYSQL_HOST: mysql-container  # Nombre del servicio del contenedor de MySQL
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Emmanuel
+      MYSQL_DB: flaskcontacts
+      MYSQL_PORT: 3306
+    ports:
+      - "3000:4000"  # Mapeo del puerto de la aplicación Flask
+    depends_on:
+      - mysql-container
+    networks:
+      - my-network
+
+networks:
+  my-network:
